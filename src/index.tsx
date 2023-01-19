@@ -3,16 +3,26 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from 'react-router-dom';
-
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import { Calendar } from './routes/Calendar';
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App/>,
+    children: [
+      {
+        path: "calendar",
+        element: <Calendar events={[]} />,
+      },
+    ]
+  },
+]);
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-     <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
