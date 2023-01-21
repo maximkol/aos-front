@@ -1,14 +1,26 @@
+import * as React from 'react'
 import { ITournament } from "../models";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import ruLocale from '@fullcalendar/core/locales/ru';
 import { INITIAL_EVENTS, createEventId } from '../event-utils'
+import { Dialog, DialogFooter, PrimaryButton, DefaultButton, DialogType} from '@fluentui/react'
+import { TournamentDetails } from '../components/TournamentDetails';
+import { useBoolean } from '@fluentui/react-hooks';
 
 export interface ICalendarProps{
     events:ITournament[]
 }
 export function Calendar(props:ICalendarProps){
+    //const [open, setOpen] = React.useState(false);
+    const [selectedEvent, setSelectedEvent] = React.useState({
+      title:'',
+      start:new Date(),
+      end:new Date()
+    } as ITournament)
+    const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
     const handleDateSelect = (selectInfo:any) => {
         let title = prompt('Please enter a new title for your event')
         let calendarApi = selectInfo.view.calendar
@@ -26,17 +38,36 @@ export function Calendar(props:ICalendarProps){
         }
     }
     const handleEventClick = (clickInfo:any) => {
-        
-          
+        // clickInfo.event.extendedProps
+        // clickInfo.event.title
+        // clickInfo.event.id
+        // clickInfo.event.start
+        const tournament:ITournament={
+          id:clickInfo.event.id,
+          start:clickInfo.event.start,
+          end:clickInfo.event.end,
+          title:clickInfo.event.title,
+          isOnline:clickInfo.event.extendedProps.isOnline,
+          city:clickInfo.event.extendedProps.city,
+          peopleNumber:clickInfo.event.extendedProps.peopleNumber
+        }
+        setSelectedEvent(tournament);
+        toggleHideDialog();  
         
     }
     const handleEvents = (events:any) => {
         
       }
+    const dialogContentProps = {
+      type: DialogType.normal,
+      title: selectedEvent.title,
+      closeButtonAriaLabel: 'Close'
+    };
     return (
         <div className='demo-app'>
             <div className='demo-app-main'>
             <FullCalendar
+                locale={ruLocale}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 headerToolbar={{
                     left: 'prev,next today',
@@ -56,6 +87,19 @@ export function Calendar(props:ICalendarProps){
                 eventsSet={handleEvents}
             />
             </div>
+            <Dialog
+              hidden={hideDialog}
+              onDismiss={toggleHideDialog}
+              dialogContentProps={dialogContentProps}
+              // modalProps={modalProps}
+            >
+              <TournamentDetails tournament={selectedEvent} />
+              
+              <DialogFooter>
+                <PrimaryButton onClick={toggleHideDialog} text="Зарегистрироваться" />
+                <DefaultButton onClick={toggleHideDialog} text="Закрыть" />
+              </DialogFooter>
+            </Dialog>
         </div>
     );
 }

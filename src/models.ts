@@ -1,8 +1,9 @@
 export interface ITournament{
+    id:string;
     title:string;
-    startDateTime:Date;
-    endDateTime:Date;
+    start:Date;
+    end:Date;
     isOnline:boolean;
-    city:string;
+    city?:string;
     peopleNumber:number;
 }
